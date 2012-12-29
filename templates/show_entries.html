@@ -1,0 +1,26 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+    <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
+      <dl>
+      <dt>Title:
+      <dd><input type=text size=20 name=title>
+      <dt>Username:
+      <dd><input type=text size=20 name=username>
+      <dt>Password:
+      <dd><input type=password size=20 name=password>
+      <dt>Server:
+      <dd><input type=text size=20 name=server>
+      <dt>Autoanswer time:
+      <dd><input type=number size=3 name=wait-time>
+      </dl>
+    </form>
+  {% endif %}
+  <ul class=entries>
+  {% for entry in entries %}
+    <li><h2>{{ entry.title }}</h2>
+  {% else %}
+    <li><em> No entries!!</em>
+  {% endfor %}
+  </ul>
+{% endblock %}    
