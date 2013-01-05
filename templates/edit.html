@@ -1,0 +1,23 @@
+{% extends "layout.html" %}
+{% block body %}
+  {% if session.logged_in %}
+
+  {% if error %}<p class=error><strong>Error:</strong> {{ error }} {% endif %}
+    <form method=post class=add-entry>
+      <dl>
+      <dt>Title:
+      <dd><input type=text size=20 name=title value ="{{entry[0]}}" required></dd>
+      <dt>Username:
+      <dd><input type=text size=20 name=username value ="{{entry[1]}}" required></dd>
+      <dt>Password:
+      <dd><input type=password size=20 name=password value="{{entry[2]}}" required></dd>
+      <dt>Server:
+      <dd><input type=text size=20 name=server value="{{entry[3]}}" required ></dd>
+      <dt>Autoanswer time:
+      <dd><input type=number size=3 name=waittime min="0" value="{{entry[4]}}"></dd>
+      <dd><input type=submit value=Update><input type=button value=Cancel onclick="location.replace('/');">
+      </dd>
+      </dl>
+    </form>
+  {% endif %}
+{% endblock %}

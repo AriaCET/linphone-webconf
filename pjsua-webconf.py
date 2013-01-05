@@ -59,7 +59,7 @@ def teardown_request(exception):
 
 @app.route('/')
 def show_entries():
-  cur = g.db.execute('select title, username, server, waittime from entries order by id')
+  cur = g.db.execute('select id,title, username, server, waittime from entries order by id')
   entries = [row for row in cur.fetchall()]
   return render_template('show_entries.html',entries=entries)
 
@@ -102,6 +102,37 @@ def changepassword():
       flash('Password changed')
       return(redirect(url_for('show_entries')))
   return render_template('password.html', error=error)
+
+@app.route('/delete/<eID>')
+def delete(eID):
+  error = None
+  if not session.get('logged_in'):
+    abort(401)
+  g.db.execute("delete from entries where id = '{0}'".format(eID))
+  g.db.commit()
+  flash('The entry successfuly deleted')
+  return redirect(url_for('show_entries'))
+
+@app.route('/edit/<eID>',methods=['GET','POST'])
+def edit(eID):
+  error = None
+  if not session.get('logged_in'):
+    abort(401)
+  if request.method == 'POST':
+    title = request.form['title']
+    username = request.form['username']
+    password = request.form['password']
+    server = request.form['server']
+    waittime = request.form['waittime']
+    g.db.execute("update entries set title='{0}', username='{1}',password='{2}', server='{3}', waittime='{4}' where id = '{5}'"\
+        .format(title,username,password,server,waittime,eID))
+    g.db.commit()
+    flash("Updted")
+    return redirect(url_for('show_entries'))
+  else :
+    cur = g.db.execute("select title,username, password, server, waittime from entries where id = '{0}'".format(eID))
+    entry = [row for row in cur][0]
+    return render_template('edit.html', error=error,entry=entry)
 
   
 @app.route('/logout')

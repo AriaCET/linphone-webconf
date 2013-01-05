@@ -4,25 +4,43 @@
     <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
       <dl>
       <dt>Title:
-      <dd><input type=text size=20 name=title></dd>
+      <dd><input type=text size=20 name=title required></dd>
       <dt>Username:
-      <dd><input type=text size=20 name=username></dd>
+      <dd><input type=text size=20 name=username required></dd>
       <dt>Password:
-      <dd><input type=password size=20 name=password></dd>
+      <dd><input type=password size=20 name=password required></dd>
       <dt>Server:
-      <dd><input type=text size=20 name=server></dd>
+      <dd><input type=text size=20 name=server required ></dd>
       <dt>Autoanswer time:
-      <dd><input type=number size=3 name=waittime min="0"></dd>
+      <dd><input type=number size=3 name=waittime min="0" value="0"></dd>
       <dd><input type=submit value=Insert></dd>	
       </dl>
     </form>
   {% endif %}
-  <ul class=entries>
+{% if entries %}
+<table id="entries_table">
+  <thead>
+    <td>Title</td><td>Username</td><td>Server</td><td></td>
+  </thead>
+  <tbody>
   {% for entry in entries %}
-    <li><h2>{{ entry[0] }}</h2>
-	<br>{{ entry[1] }}</br>
-  {% else %}
-    <li><em> No entries!!</em>
+  <tr>
+    <td> {{entry[1]}} </td>
+    <td> {{entry[2]}} </td>
+    <td> {{entry[3]}} </td>
+    {% if session.logged_in %}
+    <td> <a class = "edit" href = "/edit/{{ entry[0] }}">Edit</a> </td> 
+    <td> <a class = "delete" href = "/delete/{{ entry[0] }}" 
+      onclick="return(window.confirm('Do You wanted to Delete {{ entry[1] }}'));">Delete</a> </td>
+    {% endif %}
+ </tr>
   {% endfor %}
+</tbody>
+</table>
+{% else %}
+   <ul class="entries">
+    <li><em> No entries!!</em>
   </ul>
-{% endblock %}    
+{% endif %}
+
+{% endblock %}
