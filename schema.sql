@@ -4,6 +4,10 @@ id integer primary key autoincrement,
 title string not null,
 username number not null,
 password string,
-wait-time number not null,
+waittime number not null,
 server string not null
+);
+create table auth (
+username string not null,
+password string not null
 );
