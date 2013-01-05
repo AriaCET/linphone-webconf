@@ -4,16 +4,16 @@
     <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
       <dl>
       <dt>Title:
-      <input type=text size=20 name=title>
+      <dd><input type=text size=20 name=title></dd>
       <dt>Username:
-      <input type=text size=20 name=username>
+      <dd><input type=text size=20 name=username></dd>
       <dt>Password:
-      <input type=password size=20 name=password>
+      <dd><input type=password size=20 name=password></dd>
       <dt>Server:
-      <input type=text size=20 name=server>
+      <dd><input type=text size=20 name=server></dd>
       <dt>Autoanswer time:
-      <input type=number size=3 name=waittime>
-      <dd><input type=submit value=Insert>	
+      <dd><input type=number size=3 name=waittime min="0"></dd>
+      <dd><input type=submit value=Insert></dd>	
       </dl>
     </form>
   {% endif %}
