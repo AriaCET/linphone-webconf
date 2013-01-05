@@ -4,21 +4,23 @@
     <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
       <dl>
       <dt>Title:
-      <dd><input type=text size=20 name=title>
+      <input type=text size=20 name=title>
       <dt>Username:
-      <dd><input type=text size=20 name=username>
+      <input type=text size=20 name=username>
       <dt>Password:
-      <dd><input type=password size=20 name=password>
+      <input type=password size=20 name=password>
       <dt>Server:
-      <dd><input type=text size=20 name=server>
+      <input type=text size=20 name=server>
       <dt>Autoanswer time:
-      <dd><input type=number size=3 name=wait-time>
+      <input type=number size=3 name=waittime>
+      <dd><input type=submit value=Insert>	
       </dl>
     </form>
   {% endif %}
   <ul class=entries>
   {% for entry in entries %}
-    <li><h2>{{ entry.title }}</h2>
+    <li><h2>{{ entry[0] }}</h2>
+	<br>{{ entry[1] }}</br>
   {% else %}
     <li><em> No entries!!</em>
   {% endfor %}

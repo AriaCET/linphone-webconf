@@ -7,7 +7,7 @@ from flask import Flask, request, session, g, redirect, url_for, abort, render_t
 import os
 
 
-DATABASE = 'flaskr.db'
+DATABASE = 'phones.db'
 DEBUG = True
 SECRET_KEY = 'development key'
 USERNAME = 'admin'
@@ -60,14 +60,14 @@ def teardown_request(exception):
 @app.route('/')
 def show_entries():
   cur = g.db.execute('select title, username, server, waittime from entries order by id')
-  entries = [dict(title=row[0], username=row[1], server=row[2], waittime=row[3] ) for row in cur.fetchall()]
+  entries = [row for row in cur.fetchall()]
   return render_template('show_entries.html',entries=entries)
 
 @app.route('/add', methods=['POST'])
 def add_entry():
   if not session.get('logged_in'):
     abort(401)
-  g.db.execute('insert into entries (title, username, password, server, waittime) values(?, ?, ?, ?, ?)', [request.form['title'],request.form['text']])
+  g.db.execute('insert into entries (title, username, password, server, waittime) values(?, ?, ?, ?, ?)', [request.form['title'],request.form['username'],request.form['password'],request.form['server'],request.form['waittime']])
   g.db.commit()
   flash('New entry successfuly posted')
   return redirect(url_for('show_entries'))
@@ -114,4 +114,3 @@ if __name__ == "__main__":
   if not os.path.isfile(app.config['DATABASE']):
     init_db()
   app.run()
-  
