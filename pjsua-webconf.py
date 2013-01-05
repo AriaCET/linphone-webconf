@@ -10,8 +10,8 @@ import os
 DATABASE = 'phones.db'
 DEBUG = True
 SECRET_KEY = 'development key'
-USERNAME = 'admin'
-PASSWORD  = 'default'
+DEFAULTUSERNAME = 'admin'
+DEFAULTPASSWORD  = 'default'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -23,7 +23,7 @@ def init_db():
   with closing(connect_db()) as db:
     with app.open_resource('schema.sql') as schema:
       db.cursor().executescript(schema.read())
-      setauth(db,app.config['USERNAME'],app.config['PASSWORD'])
+      setauth(db,app.config['DEFAULTUSERNAME'],app.config['DEFAULTPASSWORD'])
     db.commit()
 
 def auth(user,password):
