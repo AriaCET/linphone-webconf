@@ -12,6 +12,7 @@ DEBUG = True
 SECRET_KEY = 'development key'
 DEFAULTUSERNAME = 'admin'
 DEFAULTPASSWORD  = 'default'
+PJSUA_CONFIG_FILE = 'pjsua.cfg'
 
 app = Flask(__name__)
 app.config.from_object(__name__)
@@ -47,6 +48,23 @@ def setauth(db,user,password):
   db.execute("delete from auth")
   db.execute("insert into auth (username, password) values('{0}', '{1}')".format(user,pashash.hexdigest()))
   db.commit()
+
+def writeconfig(db):
+  configprefix="# This is auto generated config file.\n--local-port=5061\n"
+  configaccdetails ="--id sip:{username}@{server}\n--registrar sip:{server}\n--realm *\n--username {username}\n--password {password}\n--auto-answer=200\n"
+  confignextacc = "--next-account\n"
+  configFile = open(app.config['PJSUA_CONFIG_FILE'],"w")
+  configFile.write(configprefix)
+  cur = db.execute('select username, server,password from entries order by id')
+  firstacc=True
+  for row in cur.fetchall():
+    if(firstacc):
+      firstacc = False
+    else:
+      configFile.write(confignextacc)
+    context = configaccdetails.format(username=row[0],server=row[1],password=row[2])
+    configFile.write(context)
+  configFile.close()
 
 # App stuff
 @app.before_request 
@@ -139,6 +157,7 @@ def edit(eID):
 def logout():
   session.pop('logged_in', None)
   flash('You were logged out')
+  writeconfig(g.db)
   return redirect(url_for('show_entries'))
 
 if __name__ == "__main__":
