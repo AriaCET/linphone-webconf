@@ -4,15 +4,13 @@
     <form action="{{ url_for('add_entry') }}" method=post class=add-entry>
       <dl>
       <dt>Title:
-      <dd><input type=text size=20 name=title required></dd>
+      <dd><input type=text size=20 name=title required placeholder="Name"></dd>
       <dt>Username:
-      <dd><input type=text size=20 name=username required></dd>
+      <dd><input type=text size=20 name=username pattern="\d{0,}" placeholder="Number" required></dd>
       <dt>Password:
-      <dd><input type=password size=20 name=password required></dd>
+      <dd><input type=password size=20 name=password placeholder="Password"required></dd>
       <dt>Server:
-      <dd><input type=text size=20 name=server required ></dd>
-      <dt>Autoanswer time:
-      <dd><input type=number size=3 name=waittime min="0" value="0"></dd>
+      <dd><input type=text size=20 name=server required placeholder="IP or URL"></dd>
       <dd><input type=submit value=Insert></dd>	
       </dl>
     </form>

@@ -77,7 +77,7 @@ def teardown_request(exception):
 
 @app.route('/')
 def show_entries():
-  cur = g.db.execute('select id,title, username, server, waittime from entries order by id')
+  cur = g.db.execute('select id,title, username, server from entries order by id')
   entries = [row for row in cur.fetchall()]
   return render_template('show_entries.html',entries=entries)
 
@@ -85,7 +85,7 @@ def show_entries():
 def add_entry():
   if not session.get('logged_in'):
     abort(401)
-  g.db.execute('insert into entries (title, username, password, server, waittime) values(?, ?, ?, ?, ?)', [request.form['title'],request.form['username'],request.form['password'],request.form['server'],request.form['waittime']])
+  g.db.execute('insert into entries (title, username, password, server) values(?, ?, ?, ?)', [request.form['title'],request.form['username'],request.form['password'],request.form['server']])
   g.db.commit()
   flash('New entry successfuly posted')
   return redirect(url_for('show_entries'))
@@ -141,14 +141,13 @@ def edit(eID):
     username = request.form['username']
     password = request.form['password']
     server = request.form['server']
-    waittime = request.form['waittime']
-    g.db.execute("update entries set title='{0}', username='{1}',password='{2}', server='{3}', waittime='{4}' where id = '{5}'"\
-        .format(title,username,password,server,waittime,eID))
+    g.db.execute("update entries set title='{0}', username='{1}',password='{2}', server='{3} where id = '{4}'"\
+        .format(title,username,password,server,eID))
     g.db.commit()
     flash("Updted")
     return redirect(url_for('show_entries'))
   else :
-    cur = g.db.execute("select title,username, password, server, waittime from entries where id = '{0}'".format(eID))
+    cur = g.db.execute("select title,username, password, server from entries where id = '{0}'".format(eID))
     entry = [row for row in cur][0]
     return render_template('edit.html', error=error,entry=entry)
 
