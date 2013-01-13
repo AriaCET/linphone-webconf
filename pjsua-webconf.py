@@ -8,15 +8,18 @@ import os
 from pjsua_process import pjsua
 
 DATABASE = 'phones.db'
-DEBUG = True
+DEBUG = False
 SECRET_KEY = 'development key'
 DEFAULTUSERNAME = 'admin'
 DEFAULTPASSWORD  = 'default'
 PJSUA_CONFIG_FILE = 'pjsua.cfg'
+PJSUA_LOG_FILE = 'log.log'
+HOST = '127.0.0.1'
+PORT = 8080
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-pjsua = pjsua()
+pjsua = pjsua(app.config['PJSUA_LOG_FILE'])
 
 def connect_db():
   return sqlite3.connect(app.config['DATABASE'])
@@ -164,4 +167,4 @@ def logout():
 if __name__ == "__main__":
   if not os.path.isfile(app.config['DATABASE']):
     init_db()
-  app.run()
+  app.run(app.config.get('HOST'), app.config.get('PORT'))

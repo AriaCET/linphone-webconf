@@ -2,9 +2,10 @@
 import subprocess
 
 class pjsua(object):
-	def __init__(self):
+	def __init__(self,logfile=None):
 			super(pjsua, self).__init__()
 			self.process=None
+			self.logfile=logfile
 			self.start()
 
 	def start(self):
@@ -20,9 +21,22 @@ class pjsua(object):
 			return True
 
 	def stop(self):
-		print ("stoping pjsua:" + str(self.process.pid))
+		if self.process == None:
+			return
+		pid = self.process.pid
+		print ("stoping pjsua:" + str(pid))
 		(stdoutdata, stderrdata) = self.process.communicate('q')
+		self.printlog(stdoutdata)
 		self.process =None
+
+	def printlog(self,log):
+		if self.logfile == None:
+			return
+		out = open(self.logfile,"a")
+		out.write("\n\n")
+		out.write(log)
+		out.close()
+
 
 	def restart(self):
 		print ("pjsua restarting..")
