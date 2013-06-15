@@ -5,21 +5,19 @@ from contextlib import closing
 import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 import os
-from pjsua_process import pjsua
+import linphone
 
 DATABASE = 'phones.db'
 DEBUG = False
 SECRET_KEY = 'development key'
 DEFAULTUSERNAME = 'admin'
 DEFAULTPASSWORD  = 'default'
-PJSUA_CONFIG_FILE = 'pjsua.cfg'
-PJSUA_LOG_FILE = 'log.log'
-HOST = '127.0.0.1'
+HOST = '0.0.0.0'
 PORT = 8080
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-pjsua = pjsua(app.config['PJSUA_LOG_FILE'])
+print "Init deamon"
 
 def connect_db():
   return sqlite3.connect(app.config['DATABASE'])
@@ -54,27 +52,13 @@ def setauth(db,user,password):
   db.commit()
 
 def writeconfig(db):
-  configprefix="# This is auto generated config file.\n--local-port=5061\n"
-  configaccdetails ="--id sip:{username}@{server}\n--registrar sip:{server}\n--realm *\n--username {username}\n--password {password}\n--auto-answer=200\n"
-  confignextacc = "--next-account\n"
-  configFile = open(app.config['PJSUA_CONFIG_FILE'],"w")
-  configFile.write(configprefix)
-  cur = db.execute('select username, server,password from entries order by id')
-  firstacc=True
-  for row in cur.fetchall():
-    if(firstacc):
-      firstacc = False
-    else:
-      configFile.write(confignextacc)
-    context = configaccdetails.format(username=row[0],server=row[1],password=row[2])
-    configFile.write(context)
-  configFile.close()
+  print "Write config"
 
 # App stuff
-@app.before_request 
+@app.before_request
 def before_request():
   g.db = connect_db()
-  
+
 @app.teardown_request
 def teardown_request(exception):
   g.db.close()
@@ -106,7 +90,7 @@ def login():
       return(redirect(url_for('show_entries')))
 
   return render_template('login.html', error=error)
-  
+
 @app.route('/changepassword',methods=['GET','POST'])
 def changepassword():
   error = None
@@ -155,13 +139,13 @@ def edit(eID):
     entry = [row for row in cur][0]
     return render_template('edit.html', error=error,entry=entry)
 
-  
+
 @app.route('/logout')
 def logout():
   session.pop('logged_in', None)
   flash('You were logged out')
   writeconfig(g.db)
-  pjsua.restart()
+  print "Logout"
   return redirect(url_for('show_entries'))
 
 if __name__ == "__main__":
