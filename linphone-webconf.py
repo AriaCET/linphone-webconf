@@ -5,7 +5,7 @@ from contextlib import closing
 import sqlite3
 from flask import Flask, request, session, g, redirect, url_for, abort, render_template, flash
 import os
-import linphone
+from linphone import Linphone
 
 DATABASE = 'phones.db'
 DEBUG = False
@@ -17,7 +17,9 @@ PORT = 8080
 
 app = Flask(__name__)
 app.config.from_object(__name__)
-print "Init deamon"
+print "Init "
+phone = Linphone()
+
 
 def connect_db():
   return sqlite3.connect(app.config['DATABASE'])
@@ -51,8 +53,14 @@ def setauth(db,user,password):
   db.execute("insert into auth (username, password) values('{0}', '{1}')".format(user,pashash.hexdigest()))
   db.commit()
 
-def writeconfig(db):
-  print "Write config"
+def register(db):
+  cur = db.execute('select username, server,password from entries order by id')
+  for row in cur.fetchall():
+    username=row[0]
+    server=row[1]
+    password=row[2]
+    phone.register(server,username,password);
+
 
 # App stuff
 @app.before_request
@@ -144,7 +152,10 @@ def edit(eID):
 def logout():
   session.pop('logged_in', None)
   flash('You were logged out')
-  writeconfig(g.db)
+  #restart phone
+  phone.stop()
+  phone.start()
+  register(g.db)
   print "Logout"
   return redirect(url_for('show_entries'))
 

@@ -4,15 +4,18 @@ class Linphone:
     def __init__(self):
         self.state = False
         try:
-            if(not os.system("linphonecsh init")):
-                print "Daemon inited"
-            else:
-                raise OSError
-            self.enable_autoanswer()
-            self.use_bcm_card()
+            self.start()
         except OSError:
             print "E: Cant spin up the daemon"
             exit()
+    
+    def start(self):
+        if(not os.system("linphonecsh init")):
+            print "Daemon inited"
+        else:
+            raise OSError
+        self.enable_autoanswer()
+        self.use_bcm_card()
 
     def register(self,host,username,password):
         try:
@@ -34,5 +37,9 @@ class Linphone:
                 return True
         return False
 
-    def __del__(self):
+    def stop(self):
         os.system("linphonecsh exit")
+    
+    def __del__(self):
+        self.stop
+        
